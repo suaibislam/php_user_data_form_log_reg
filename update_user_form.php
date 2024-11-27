@@ -28,7 +28,7 @@ if (!$user) {
     <?php include 'navbar.php' ?>
 <div class="container mt-5">
     <h2>Update User</h2>
-    <form action="update_user.php" method="POST" enctype="multipart/form-data">
+    <form action="update_user.php" method="POST" enctype="multipart/form-data" id="updateForm" onsubmit="return validateForm()">
         <input type="hidden" name="id" value="<?= htmlspecialchars($user['id']); ?>">
 
         <div class="mb-3">
@@ -42,8 +42,8 @@ if (!$user) {
         </div>
 
         <div class="mb-3">
-            <label for="email" class="form-label">Age:</label>
-            <input type="text" name="email" class="form-control" id="email" value="<?= htmlspecialchars($user['email']); ?>" required>
+            <label for="age" class="form-label">Age:</label>
+            <input type="number" name="age" class="form-control" id="age" value="<?= htmlspecialchars($user['age']); ?>" required min="1">
         </div>
 
         <div class="mb-3">
@@ -55,7 +55,7 @@ if (!$user) {
             <label for="photo" class="form-label">Photo:</label>
             <input type="file" name="photo" class="form-control" id="photo">
             <?php if ($user['photo']): ?>
-                <img src="uploads/<?= htmlspecialchars($user['photo']); ?>" alt="Current Photo" class="img-thumbnail mt-2" width="100">
+                <img src="data:image/jpeg;base64,<?= htmlspecialchars($user['photo']); ?>" alt="Photo" class="img-fluid rounded" width="50">            
             <?php endif; ?>
         </div>
 
@@ -68,6 +68,37 @@ if (!$user) {
         <a href="user_list.php" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // JavaScript Form Validation
+    function validateForm() {
+        const name = document.getElementById("name").value;
+        const username = document.getElementById("username").value;
+        const age = document.getElementById("age").value;
+        const phone = document.getElementById("phone").value;
+
+        // Check if Name and Username are filled
+        if (!name || !username) {
+            alert("Name and Username are required.");
+            return false;
+        }
+
+        // Check if Age is a positive number
+        if (age <= 0 || isNaN(age)) {
+            alert("Please enter a valid age.");
+            return false;
+        }
+
+        // Phone validation (simple check for 10 digits)
+        const phoneRegex = /^[0-9]{11}$/;
+        if (!phone.match(phoneRegex)) {
+            alert("Phone number must be 11 digits.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
 </body>
 </html>

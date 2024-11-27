@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $username = trim($_POST['username']);
     $age = trim($_POST['age']);
+    // Password not included in this form, consider adding it
     $phone = trim($_POST['phone']);
     $description = trim($_POST['description']);
     $photoName = null;
@@ -112,7 +113,7 @@ $result = $conn->query("SELECT * FROM users");
         <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form action="" method="POST" enctype="multipart/form-data" id="userForm" onsubmit="return validateForm()">
+                    <form action="" method="POST" enctype="multipart/form-data">
                         <div class="modal-header">
                             <h5 class="modal-title" id="userModalLabel">User Data Information</h5>
                             <button type="button" class="btn-close text-danger" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -129,11 +130,11 @@ $result = $conn->query("SELECT * FROM users");
                             </div>
                             <div class="mb-3">
                                 <label for="age">Age:</label>
-                                <input type="number" id="age" name="age" class="form-control" required min="1">
+                                <input type="number" id="age" name="age" class="form-control" required>
                             </div>
                             <div class="mb-3">
                                 <label for="phone">Phone:</label>
-                                <input type="text" id="phone" name="phone" class="form-control">
+                                <input type="number" id="phone" name="phone" class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label for="photo" class="form-label">Choose a Photo:</label>
@@ -158,6 +159,7 @@ $result = $conn->query("SELECT * FROM users");
             <table class="table table-bordered table-hover">
                 <thead class="table-secondary">
                     <tr>
+                        <!-- <th>ID</th> -->
                         <th>Name</th>
                         <th>Username</th>
                         <th>Age</th>
@@ -171,6 +173,7 @@ $result = $conn->query("SELECT * FROM users");
                     <?php if ($result->num_rows > 0): ?>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
+                                <!-- <td></td> -->
                                 <td><?= htmlspecialchars($row['name']); ?></td>
                                 <td><?= htmlspecialchars($row['username']); ?></td>
                                 <td><?= htmlspecialchars($row['age']); ?></td>
@@ -200,35 +203,6 @@ $result = $conn->query("SELECT * FROM users");
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-       function validateForm() {
-        const name = document.getElementById("name").value;
-        const username = document.getElementById("username").value;
-        const age = document.getElementById("age").value;
-        const phone = document.getElementById("phone").value;
-
-        // Check if Name and Username are filled
-        if (!name || !username) {
-            alert("Name and Username are required.");
-            return false;
-        }
-
-        // Check if Age is a positive number
-        if (age <= 0 || isNaN(age)) {
-            alert("Please enter a valid age.");
-            return false;
-        }
-
-        // Phone validation (simple check for 10 digits)
-        const phoneRegex = /^[0-9]{11}$/;
-        if (!phone.match(phoneRegex)) {
-            alert("Phone number must be 11 digits.");
-            return false;
-        }
-
-        return true;
-    }
-    </script>
 </body>
 
 </html>

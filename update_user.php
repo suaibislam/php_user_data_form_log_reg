@@ -8,46 +8,46 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Sanitize and validate the input
     $id = intval($_POST['id']);
     $name = trim($_POST['name']);
     $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
+    $age = trim($_POST['age']);
     $phone = trim($_POST['phone']);
     $description = trim($_POST['description']);
     $photoName = null;
 
     // Handle file upload securely
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] == UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
-        
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        // Validate image file type and size
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        $fileMime = mime_content_type($_FILES['photo']['tmp_name']);
-        if (in_array($fileMime, $allowedTypes)) {
-            $photoName = uniqid() . "_" . basename($_FILES['photo']['name']);
-            $photoName = preg_replace('/[^A-Za-z0-9_\.-]/', '', $photoName); // Sanitize filename
-            move_uploaded_file($_FILES['photo']['tmp_name'], $uploadDir . $photoName);
-        } else {
-            echo "Invalid file type!";
-            exit;
+        $fileType = $_FILES['photo']['type'];
+
+        if (!in_array($fileType, $allowedTypes)) {
+            echo "Error: Only JPG, PNG, or GIF images are allowed.";
+            exit();
         }
+
+        // Get file content and encode it to Base64
+        $fileContent = file_get_contents($_FILES['photo']['tmp_name']);
+        $photoName = base64_encode($fileContent);
     }
 
     // Update user data
-    $sql = "UPDATE users SET name=?, username=?, email=?, phone=?, description=?";
+    $sql = "UPDATE users SET name=?, username=?, age=?, phone=?, description=?";
+
     if ($photoName) {
         $sql .= ", photo=?";
     }
+
     $sql .= " WHERE id=?";
 
     $stmt = $conn->prepare($sql);
 
     if ($photoName) {
-        $stmt->bind_param("ssssssi", $name, $username, $email, $phone, $description, $photoName, $id);
+        $stmt->bind_param("ssssssi", $name, $username, $age, $phone, $description, $photoName, $id);
     } else {
-        $stmt->bind_param("sssssi", $name, $username, $email, $phone, $description, $id);
+        $stmt->bind_param("sssssi", $name, $username, $age, $phone, $description, $id);
     }
 
     if ($stmt->execute()) {
